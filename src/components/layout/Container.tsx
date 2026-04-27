@@ -1,28 +1,14 @@
 import React from 'react';
-import Sidebar from './Sidebar';
-import Header from './Header';
 
 interface Props {
   children: React.ReactNode;
+  className?: string;
 }
 
-export default function Container({ children }: Props) {
+export default function Container({ children, className = '' }: Props) {
   return (
-    <div className="flex bg-gray-50 min-h-screen">
-      {/* Yon menyu (Sidebar) */}
-      <Sidebar />
-      
-      <div className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
-        {/* Yuqori Navbar */}
-        <Header />
-        
-        {/* Asosiy kontent qismi - Katta padding bilan */}
-        <main className="flex-1 p-8 md:p-12 lg:p-20">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
-        </main>
-      </div>
+    <div className={`w-full max-w-7xl mx-auto ${className}`}>
+      {children}
     </div>
   );
 }

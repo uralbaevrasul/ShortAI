@@ -1,16 +1,24 @@
 import type { Metadata } from 'next';
 import './globals.css';
- 
+import DashboardLayout from '@/components/layout/DashboardLayout';
+import { VideoCreationProvider } from '@/context/VideoCreationContext';
+
 export const metadata: Metadata = {
-  title: 'ShortForge — AI YouTube Shorts Generator',
-  description: 'Create viral YouTube Shorts with AI in seconds',
+  title: 'ShortAI — AI Video Forge',
+  description: 'AI yordamida professional Shorts videolar yarating',
   icons: { icon: '/favicon.ico' },
 };
- 
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="uz" suppressHydrationWarning>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <VideoCreationProvider>
+          <DashboardLayout>
+            {children}
+          </DashboardLayout>
+        </VideoCreationProvider>
+      </body>
     </html>
   );
 }

@@ -1,31 +1,48 @@
 'use client';
 
-import React from 'react';
-import Container from '@/components/layout/Container';
-import Generate from '@/components/video/Generate';
+import React, { useState } from 'react';
+import { useVideoCreation } from '@/context/VideoCreationContext';
 
 export default function CreatePage() {
+  const [inputValue, setInputValue] = useState('');
+  const { startCreation } = useVideoCreation();
+
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputValue.trim()) return;
+    startCreation(inputValue);
+  };
+
   return (
-    <Container>
-      <div className="max-w-4xl mx-auto py-10">
-        {/* Sarlavha qismi */}
-        <div className="text-center mb-12">
-          <div className="inline-block bg-red-100 text-red-600 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4">
-            AI Video Generation
-          </div>
-          <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-4">
-            Yangi <span className="text-red-600">Shorts</span> Yarating
-          </h1>
-          <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-            G'oyangizni bir necha so'zda tushuntiring, qolganini bizning aqlli tizimimiz bajaradi.
-          </p>
+    <div className="flex flex-col gap-10 items-center justify-center min-h-[60vh]">
+      <section className="text-center flex flex-col gap-4 max-w-2xl animate-in">
+        <h2 className="text-5xl font-black tracking-tight text-text-main">Yangi video yaratish ✨</h2>
+        <p className="text-text-muted text-lg font-semibold">Mavzuni kiriting va qolganini sun'iy intellektga qo'yib bering.</p>
+      </section>
+
+      <form 
+        onSubmit={handleCreate}
+        className="w-full max-w-xl flex flex-col gap-6 animate-in" 
+        style={{ animationDelay: '0.1s' }}
+      >
+        <div className="card-premium flex flex-col gap-4 p-10">
+          <label className="text-xs font-black text-primary uppercase tracking-[0.2em]">Mavzu nomi</label>
+          <input 
+            type="text" 
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Masalan: Rim imperiyasi"
+            className="w-full px-8 py-6 rounded-2xl text-xl font-bold transition-all placeholder:text-[var(--text-muted)] opacity-80"
+          />
         </div>
 
-        {/* Generatsiya formasi */}
-        <div className="max-w-3xl mx-auto">
-          <Generate />
-        </div>
-      </div>
-    </Container>
+        <button 
+          type="submit"
+          className="w-full py-6 bg-primary text-white rounded-[2rem] font-black text-2xl shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+        >
+          VIDEONI YARATISH 🚀
+        </button>
+      </form>
+    </div>
   );
 }

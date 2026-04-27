@@ -1,164 +1,87 @@
 'use client';
-// src/app/telegram/page.tsx
 
-import Container from '@/components/layout/Container';
-import Header from '@/components/layout/Header';
-
-const TG = '#229ED9';
-
-const COMMANDS = [
-  { cmd: '/create',  desc: 'Yangi video yaratish',        cls: 'text-sky-400 bg-sky-400/10'       },
-  { cmd: '/status',  desc: "So'nggi videolar holati",     cls: 'text-violet-400 bg-violet-400/10' },
-  { cmd: '/balance', desc: "Qolgan kreditlarni ko'rish",  cls: 'text-emerald-400 bg-emerald-400/10' },
-];
-
-function TgIcon({ size = 24 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.2" />
-      <path
-        d="M16.036 8.533L7.362 11.879c-.69.277-.685.66-.127.832l2.232.697
-           5.168-3.26c.245-.15.467-.066.279.1l-4.19 3.784-.161 1.623c.52 0
-           .75-.239 1.032-.512l2.479-2.414 5.16 3.812c.95.524 1.63.252
-           1.889-.843l3.416-8.541c.47-1.887-.718-2.723-2.163-2.201z"
-        fill="white"
-      />
-    </svg>
-  );
-}
-
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-2xl p-6 flex flex-col gap-5 border border-white/[0.06] bg-white/[0.03]">
-      <h2 className="font-bold text-base text-[var(--text-primary)]">{title}</h2>
-      {children}
-    </div>
-  );
-}
-
-function Step({ n, children }: { n: number; children: React.ReactNode }) {
-  return (
-    <li className="flex gap-3">
-      <span
-        className="shrink-0 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center mt-0.5"
-        style={{ background: TG }}
-      >
-        {n}
-      </span>
-      <span className="text-sm leading-relaxed text-[var(--text-muted)]">{children}</span>
-    </li>
-  );
-}
+import React, { useState } from 'react';
+import { useVideoCreation } from '@/context/VideoCreationContext';
 
 export default function TelegramPage() {
+  const { topic } = useVideoCreation();
+  const [status, setStatus] = useState<'pending' | 'confirmed' | 'uploading' | 'completed'>('pending');
+  const [progress, setProgress] = useState(0);
+
+  const handleConfirm = () => {
+    setStatus('confirmed');
+    setTimeout(() => {
+      setStatus('uploading');
+      const interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev < 100) return prev + 2;
+          clearInterval(interval);
+          return 100;
+        });
+      }, 100);
+    }, 1500);
+  };
+
   return (
-    <Container>
-      <Header />
+    <div className="flex flex-col gap-8 max-w-4xl mx-auto py-10">
+      <section className="flex flex-col gap-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent border border-glass-border text-text-muted rounded-full text-[10px] font-black uppercase w-fit mb-2 tracking-[0.1em]">
+          <span className="w-2 h-2 bg-primary rounded-full"></span>
+          BOT INTEGRATSIYA
+        </div>
+        <h2 className="text-4xl font-black tracking-tight text-text-main mb-2 tracking-tighter uppercase">Telegram & YouTube</h2>
+        <p className="text-text-muted font-bold text-sm tracking-tight opacity-60">Video tayyor! Uni Telegram botingizda tekshirib oling va tasdiqlang.</p>
+      </section>
 
-      <div className="max-w-3xl mx-auto px-6 py-12 flex flex-col items-center gap-10">
-
-        {/* ── Hero ── */}
-        <div className="text-center space-y-3">
-          <div
-            className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-1"
-            style={{ background: TG }}
-          >
-            <TgIcon size={28} />
+      <div className="card-premium flex flex-col gap-8 bg-accent/40">
+        {status === 'pending' && (
+          <div className="flex flex-col items-center gap-8 text-center animate-in">
+             <div className="w-24 h-24 bg-accent text-primary rounded-[2rem] flex items-center justify-center text-5xl shadow-2xl shadow-primary/10 border border-glass-border">🤖</div>
+             <div>
+               <h3 className="text-2xl font-black text-text-main mb-3">Telegramga yuborildi!</h3>
+               <p className="text-text-muted font-semibold text-sm max-w-xs mx-auto">Botimiz sizga videoni yubordi. Iltimos, uni ko'rib chiqing va tasdiqlang.</p>
+             </div>
+             <button 
+               onClick={handleConfirm}
+               className="px-12 py-5 bg-primary text-white rounded-[2rem] font-black text-xl hover:bg-primary-hover transition-all shadow-2xl shadow-primary/20 active:scale-[0.98]"
+             >
+               TASDIQLASH VA YUKLASH ✅
+             </button>
           </div>
+        )}
 
-          <h1
-            className="text-4xl font-extrabold tracking-tight"
-            style={{ fontFamily: 'Syne, sans-serif' }}
-          >
-            <span style={{ color: TG }}>Telegram Bot</span> Integratsiyasi
-          </h1>
+        {(status === 'confirmed' || status === 'uploading') && (
+           <div className="flex flex-col items-center gap-8 text-center animate-in">
+             <div className="w-24 h-24 bg-primary text-white rounded-[2rem] flex items-center justify-center text-5xl animate-pulse shadow-2xl shadow-primary/20">🎬</div>
+             <div>
+               <h3 className="text-2xl font-black text-text-main mb-3">YouTube-ga Yuklanmoqda...</h3>
+               <p className="text-text-muted font-semibold text-sm">Video avtomatik ravishda kanalingizga joylanmoqda.</p>
+             </div>
+             <div className="w-full max-w-md h-3 bg-bg-sidebar rounded-full overflow-hidden mt-4 border border-glass-border p-0.5">
+                <div className="h-full bg-primary transition-all duration-300 rounded-full" style={{ width: `${progress}%` }}></div>
+             </div>
+             <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{progress}% bajarildi</span>
+           </div>
+        )}
 
-          <p className="text-sm text-[var(--text-muted)] max-w-sm mx-auto leading-relaxed">
-            ShortForge boti orqali Telegramdan viral shorts yarating va kanalingizga yuboring.
-          </p>
-        </div>
-
-        {/* ── Cards ── */}
-        <div className="grid md:grid-cols-2 gap-5 w-full">
-
-          {/* Guide */}
-          <Card title="Botni ulash qo'llanmasi">
-            <ol className="space-y-4">
-              <Step n={1}>
-                Telegramda{' '}
-                <a
-                  href="https://t.me/shortforge_bot"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-semibold hover:underline"
-                  style={{ color: TG }}
-                >
-                  @shortforge_bot
-                </a>{' '}
-                ga kiring
-              </Step>
-
-              <Step n={2}>
-                Botga{' '}
-                <code className="px-1.5 py-0.5 rounded bg-white/10 font-mono text-xs">
-                  /start
-                </code>{' '}
-                buyrug'ini yuboring
-              </Step>
-
-              <Step n={3}>
-                Tokenni botga yuboring:
-                <div className="mt-2 flex items-center justify-between px-3 py-2 rounded-lg bg-black/30 border border-white/10 group cursor-pointer hover:bg-black/50 transition-colors">
-                  <code className="font-mono text-xs text-white/70">sf_1a2b3c4d5e6f</code>
-                  <span className="text-xs text-white/30 group-hover:text-white/70 transition-colors">
-                    Nusxa olish
-                  </span>
-                </div>
-              </Step>
-            </ol>
-
-            <div
-              className="flex items-center gap-2 text-xs font-medium pl-3 py-2 border-l-2"
-              style={{ color: TG, borderColor: TG }}
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inset-0 rounded-full bg-emerald-400 opacity-60" />
-                <span className="relative rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-              Ulanish holati: Kutilmoqda...
-            </div>
-          </Card>
-
-          {/* Commands */}
-          <Card title="Mavjud buyruqlar">
-            <ul className="space-y-2 flex-1">
-              {COMMANDS.map(({ cmd, desc, cls }) => (
-                <li
-                  key={cmd}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl border border-white/[0.05] bg-white/[0.03]"
-                >
-                  <code className={`px-2 py-0.5 rounded text-xs font-mono font-semibold ${cls}`}>
-                    {cmd}
-                  </code>
-                  <span className="text-sm text-[var(--text-muted)]">{desc}</span>
-                </li>
-              ))}
-            </ul>
-
-            <a
-              href="https://t.me/shortforge_bot"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-80 transition-opacity"
-              style={{ background: TG }}
-            >
-              <TgIcon size={15} />
-              Botni ochish
-            </a>
-          </Card>
-
-        </div>
+        {(status === 'completed' || progress === 100) && (
+           <div className="flex flex-col items-center gap-8 text-center animate-in">
+             <div className="w-24 h-24 bg-green-500 text-white rounded-[2rem] flex items-center justify-center text-5xl shadow-2xl shadow-green-500/20">🏆</div>
+             <div>
+               <h3 className="text-2xl font-black text-text-main mb-3">Muvaffaqiyatli Yuklandi!</h3>
+               <p className="text-text-muted font-semibold text-sm">Videongiz endi YouTube-da jonli efirda.</p>
+             </div>
+             <button className="px-10 py-4 bg-accent border border-glass-border text-text-main rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-text-main hover:text-bg-main transition-all">
+               VIDEONI KO'RISH ↗
+             </button>
+           </div>
+        )}
       </div>
-    </Container>
+
+      <div className="flex items-center justify-between px-6 text-text-muted text-[10px] font-black uppercase tracking-[0.2em]">
+        <span>JARAYON: 5/6</span>
+        <span className="opacity-60 uppercase">OXIRGI BOSQICH 🏁</span>
+      </div>
+    </div>
   );
 }
