@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Navbar from './Navbar';
 import SidebarLeft from './SidebarLeft';
 import SidebarRight from './SidebarRight';
+import MobileNav from './MobileNav';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -36,6 +37,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </div>
         </footer>
+
+        <MobileNav />
       </main>
 
       <SidebarRight />
